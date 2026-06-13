@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 196 10% 98%; /* Very light slate */
+    --foreground: 196 30% 15%; /* Deep teal text */
+
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 196 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 196 30% 15%;
+
+    --primary: 358 66% 45%; /* Crimson Red from logo */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 196 27% 32%; /* Deep Teal from logo */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 196 15% 94%;
+    --muted-foreground: 196 15% 45%;
+
+    --accent: 358 66% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 196 15% 90%;
+    --input: 196 15% 90%;
+    --ring: 358 66% 45%;
+
+    --radius: 1.5rem;
+  }
+
+  .dark {
+    /* Kept exactly the same as root so the theme stays light, or we can leave dark mode support */
+    --background: 196 30% 8%;
+    --foreground: 196 10% 95%;
+
+    --card: 196 25% 12%;
+    --card-foreground: 196 10% 95%;
+
+    --popover: 196 25% 12%;
+    --popover-foreground: 196 10% 95%;
+
+    --primary: 358 66% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 196 27% 32%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 196 20% 18%;
+    --muted-foreground: 196 15% 65%;
+
+    --accent: 358 66% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 196 20% 18%;
+    --input: 196 20% 18%;
+    --ring: 358 66% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  input, select, textarea {
+    @apply transition-all duration-300;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
