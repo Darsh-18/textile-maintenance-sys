@@ -61,6 +61,9 @@ const MaintenanceEntry = () => {
     mutationFn: async (id: number) => await apiClient.delete(`/services/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
+    },
+    onError: (error: any) => {
+      alert("Failed to delete service: " + (error.response?.data?.detail || error.message));
     }
   });
 
