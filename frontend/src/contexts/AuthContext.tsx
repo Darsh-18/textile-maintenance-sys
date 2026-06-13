@@ -4,7 +4,7 @@ import { apiClient } from '../api/client';
 interface User {
   username: string;
   role: string;
-  is_active: bool;
+  is_active: boolean;
 }
 
 interface AuthContextType {
