@@ -16,9 +16,19 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+from seed import reset_and_seed_data
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Textile Maintenance API"}
+
+@app.get("/api/seed")
+def seed_database():
+    try:
+        reset_and_seed_data()
+        return {"message": "Database successfully seeded from the cloud!"}
+    except Exception as e:
+        return {"error": str(e)}
 
 from .routers import auth, machines, services, parts, vendors, maintenance, repairs, dashboard
 
