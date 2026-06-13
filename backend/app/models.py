@@ -38,9 +38,9 @@ class Machine(Base):
     status = Column(String, default="Active")
     notes = Column(Text, nullable=True)
 
-    maintenance_sessions = relationship("MaintenanceSession", back_populates="machine")
-    repair_requests = relationship("RepairRequest", back_populates="machine")
-    downtimes = relationship("DowntimeRecord", back_populates="machine")
+    maintenance_sessions = relationship("MaintenanceSession", back_populates="machine", cascade="all, delete-orphan")
+    repair_requests = relationship("RepairRequest", back_populates="machine", cascade="all, delete-orphan")
+    downtimes = relationship("DowntimeRecord", back_populates="machine", cascade="all, delete-orphan")
 
 class ServiceMaster(Base):
     __tablename__ = "services"

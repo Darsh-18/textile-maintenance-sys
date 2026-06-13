@@ -48,6 +48,9 @@ const Machines = () => {
     mutationFn: async (id: number) => await apiClient.delete(`/machines/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['machines'] });
+    },
+    onError: (error: any) => {
+      alert("Failed to delete machine: " + (error.response?.data?.detail || error.message));
     }
   });
 
