@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
 import { format } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit2, X } from 'lucide-react';
+import { Edit2, X, Download } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const MachineHistory = () => {
@@ -74,14 +74,49 @@ const MachineHistory = () => {
     updateSession.mutate(formData);
   };
 
+  const exportCSV = () => {
+    if (!history || history.length === 0) return;
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Date,Services Performed,Remarks,Recorded By\n";
+    
+    history.forEach((session: any) => {
+      const date = format(new Date(session.date), 'yyyy-MM-dd HH:mm');
+      const services = session.items.map((item: any) => item.service?.service_name).join("; ");
+      const remarks = (session.remarks || "").replace(/"/g, '""');
+      const worker = session.worker?.username || "";
+      
+      csvContent += `"${date}","${services}","${remarks}","${worker}"\n`;
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${machine?.machine_number || 'machine'}_history.csv`.replace(/\s+/g, '_'));
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loadingMachine || loadingHistory) return <div>Loading...</div>;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto relative">
       <button onClick={() => navigate(-1)} className="text-primary hover:underline">&larr; Back to Machines</button>
-      <div className="bg-card border p-6 rounded-xl shadow-sm">
-        <h2 className="text-2xl font-bold">{machine?.machine_number} - {machine?.name}</h2>
-        <p className="text-muted-foreground">Department: {machine?.department} | Type: {machine?.type}</p>
+      <div className="bg-card border p-6 rounded-xl shadow-sm relative flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold">{machine?.machine_number} - {machine?.name}</h2>
+          <p className="text-muted-foreground mt-1">Department: {machine?.department} | Type: {machine?.type}</p>
+        </div>
+        {history && history.length > 0 && (
+          <button 
+            onClick={exportCSV}
+            className="flex items-center space-x-2 bg-primary/10 text-primary hover:bg-primary hover:text-background px-4 py-2 rounded-full font-bold transition-colors text-xs uppercase tracking-widest"
+          >
+            <Download size={16} />
+            <span>Export CSV</span>
+          </button>
+        )}
       </div>
 
       <h3 className="text-xl font-semibold mt-8 mb-4">Maintenance Timeline</h3>
