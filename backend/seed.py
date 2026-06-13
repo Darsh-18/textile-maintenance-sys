@@ -9,12 +9,12 @@ from app.models import User, Machine, ServiceMaster, PartMaster, Vendor, RoleEnu
 from app.auth import get_password_hash
 
 def reset_and_seed_data():
-    # 1. Drop all existing tables to remove previous data
-    Base.metadata.drop_all(bind=engine)
-    
-    # 2. Recreate all tables
-    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
+    
+    # Check if already seeded
+    if db.query(User).filter_by(username="admin").first():
+        db.close()
+        return
     
     # 3. Seed Users
     admin = User(username="admin", hashed_password=get_password_hash("admin123"), role=RoleEnum.ADMIN.value)
