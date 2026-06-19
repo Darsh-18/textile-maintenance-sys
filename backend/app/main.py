@@ -35,7 +35,7 @@ from .routers import auth, machines, services, parts, vendors, maintenance, repa
 app.include_router(auth.router)
 app.include_router(machines.router)
 app.include_router(services.router)
-app.include_router(reports.router)
+
 
 from sqlalchemy import text
 from .database import engine
