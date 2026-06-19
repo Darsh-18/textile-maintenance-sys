@@ -15,6 +15,16 @@ const MasterData = () => {
     queryFn: async () => (await apiClient.get('/services/')).data
   });
 
+  const { data: parts } = useQuery({
+    queryKey: ['parts'],
+    queryFn: async () => (await apiClient.get('/parts/')).data
+  });
+
+  const { data: vendors } = useQuery({
+    queryKey: ['vendors'],
+    queryFn: async () => (await apiClient.get('/vendors/')).data
+  });
+
   const createItem = useMutation({
     mutationFn: async ({ endpoint, data }: { endpoint: string, data: any }) => {
       const res = await apiClient.post(endpoint, data);
@@ -28,7 +38,9 @@ const MasterData = () => {
   });
 
   const openModal = () => {
-    setFormData({ service_name: '', interval_days: 30, is_active: true });
+    if (activeTab === 'services') setFormData({ service_name: '', is_active: true });
+    if (activeTab === 'parts') setFormData({ part_number: '', part_name: '', is_active: true });
+    if (activeTab === 'vendors') setFormData({ vendor_name: '', contact_person: '', mobile: '' });
     setIsModalOpen(true);
   };
 
@@ -50,28 +62,70 @@ const MasterData = () => {
       </div>
 
       <div className="flex space-x-1 border-b">
-        <button className="px-4 py-2 capitalize font-medium text-sm transition-colors border-b-2 border-primary text-primary">
-          Services
-        </button>
+        {['services', 'parts', 'vendors'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 capitalize font-medium text-sm transition-colors ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
       <div className="bg-card border rounded-xl overflow-x-auto shadow-sm">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-muted/50 border-b">
-            <tr><th className="p-4 font-semibold">Service Name</th><th className="p-4 font-semibold">Status</th><th className="p-4"></th></tr>
-          </thead>
-          <tbody>
-            {services?.map((s: any) => (
-              <tr key={s.id} className="border-b last:border-0 hover:bg-muted/20">
-                <td className="p-4 font-medium">{s.service_name}</td>
-                <td className="p-4">{s.is_active ? 'Active' : 'Inactive'}</td>
-                <td className="p-4 text-right">
-                  <Link to={`/services/${s.id}`} className="text-primary hover:underline text-xs font-bold uppercase">View History</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {activeTab === 'services' && (
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-muted/50 border-b">
+              <tr><th className="p-4 font-semibold">Service Name</th><th className="p-4 font-semibold">Status</th><th className="p-4"></th></tr>
+            </thead>
+            <tbody>
+              {services?.map((s: any) => (
+                <tr key={s.id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="p-4 font-medium">{s.service_name}</td>
+                  <td className="p-4">{s.is_active ? 'Active' : 'Inactive'}</td>
+                  <td className="p-4 text-right">
+                    <Link to={`/services/${s.id}`} className="text-primary hover:underline text-xs font-bold uppercase">View History</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        
+        {activeTab === 'parts' && (
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-muted/50 border-b">
+              <tr><th className="p-4 font-semibold">Part Number</th><th className="p-4 font-semibold">Part Name</th><th className="p-4 font-semibold">Status</th></tr>
+            </thead>
+            <tbody>
+              {parts?.map((p: any) => (
+                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="p-4 font-medium">{p.part_number}</td>
+                  <td className="p-4">{p.part_name}</td>
+                  <td className="p-4">{p.is_active ? 'Active' : 'Inactive'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {activeTab === 'vendors' && (
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-muted/50 border-b">
+              <tr><th className="p-4 font-semibold">Vendor Name</th><th className="p-4 font-semibold">Contact</th><th className="p-4 font-semibold">Phone</th></tr>
+            </thead>
+            <tbody>
+              {vendors?.map((v: any) => (
+                <tr key={v.id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="p-4 font-medium">{v.vendor_name}</td>
+                  <td className="p-4">{v.contact_person}</td>
+                  <td className="p-4">{v.mobile}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {isModalOpen && (
@@ -84,10 +138,45 @@ const MasterData = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Service Name</label>
-                <input required type="text" value={formData.service_name} onChange={e => setFormData({...formData, service_name: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. OIL CHANGE" />
-              </div>
+              {activeTab === 'services' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Service Name</label>
+                    <input required type="text" value={formData.service_name} onChange={e => setFormData({...formData, service_name: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. OIL CHANGE" />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'parts' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Part Number</label>
+                    <input required type="text" value={formData.part_number} onChange={e => setFormData({...formData, part_number: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. P-123" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Part Name</label>
+                    <input required type="text" value={formData.part_name} onChange={e => setFormData({...formData, part_name: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. Roller Bearing" />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'vendors' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Vendor Name</label>
+                    <input required type="text" value={formData.vendor_name} onChange={e => setFormData({...formData, vendor_name: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. ABC Textiles" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Contact Person</label>
+                    <input type="text" value={formData.contact_person} onChange={e => setFormData({...formData, contact_person: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. John Doe" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Mobile Phone</label>
+                    <input type="text" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. +1 234 567 8900" />
+                  </div>
+                </>
+              )}
+
               <button type="submit" disabled={createItem.isPending} className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium hover:opacity-90 transition-opacity">
                 {createItem.isPending ? 'Saving...' : 'Save'}
               </button>
