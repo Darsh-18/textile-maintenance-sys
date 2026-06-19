@@ -25,10 +25,10 @@ const Layout = () => {
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-screen bg-background text-foreground overflow-hidden font-sans">
       
-      {/* Slim Sidebar */}
-      <div className="w-24 bg-card border-r border-border flex flex-col items-center py-8 z-20 shadow-2xl">
+      {/* Slim Sidebar (Desktop Only) */}
+      <div className="hidden md:flex w-24 bg-card border-r border-border flex-col items-center py-8 z-20 shadow-2xl">
         <div className="mb-10 w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)] p-1 overflow-hidden">
           <img src="/surbhi-logo.png" alt="Surbhi Textile Logo" className="w-full h-full object-contain" />
         </div>
@@ -58,12 +58,33 @@ const Layout = () => {
         </nav>
 
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 px-2 py-2 flex justify-around items-center pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.1)]">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
+                isActive ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <div className={`${isActive ? 'scale-110' : ''} transition-transform`}>
+                {item.icon}
+              </div>
+              <span className="text-[10px] mt-1 font-bold">{item.name.split(' ')[0]}</span>
+            </Link>
+          )
+        })}
+      </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-background">
+      <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-background pb-16 md:pb-0">
         
         {/* Top Header */}
-        <header className="p-6 px-10 flex justify-between items-center sticky top-0 z-30">
+        <header className="p-4 px-4 md:p-6 md:px-10 flex justify-between items-center sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <div className="flex items-center space-x-4">
             <div className="bg-white rounded-lg p-1.5 shadow-md flex items-center justify-center h-10 w-20">
               <img src="/surbhi-logo.png" alt="Surbhi Textile" className="h-full w-full object-contain" />
@@ -116,7 +137,7 @@ const Layout = () => {
           </div>
         </header>
         
-        <main className="px-10 pb-10 pt-2 flex-1 overflow-y-auto">
+        <main className="px-4 md:px-10 pb-6 md:pb-10 pt-2 flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
