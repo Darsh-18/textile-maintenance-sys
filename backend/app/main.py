@@ -35,6 +35,24 @@ from .routers import auth, machines, services, parts, vendors, maintenance, repa
 app.include_router(auth.router)
 app.include_router(machines.router)
 app.include_router(services.router)
+app.include_router(reports.router)
+
+from sqlalchemy import text
+from .database import engine
+
+@app.get("/api/migrate-repairs")
+def migrate_repairs():
+    with engine.begin() as conn:
+        try:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN cost VARCHAR;"))
+        except: pass
+        try:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN invoice_number VARCHAR;"))
+        except: pass
+        try:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN completion_date DATE;"))
+        except: pass
+    return {"message": "Migration complete"}
 app.include_router(parts.router)
 app.include_router(vendors.router)
 app.include_router(maintenance.router)

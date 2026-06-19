@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
 import { format } from 'date-fns';
-import { X, Edit2, Trash2 } from 'lucide-react';
+import { X, Edit2, Trash2, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Repairs = () => {
@@ -22,6 +22,8 @@ const Repairs = () => {
     remarks: '',
     sent_date: new Date().toISOString().split('T')[0],
   });
+  const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
+  const [completionData, setCompletionData] = useState({ id: 0, cost: '', invoice_number: '', completion_date: new Date().toISOString().split('T')[0] });
   
   const { data: repairs, isLoading } = useQuery({
     queryKey: ['repairs'],
@@ -82,6 +84,30 @@ const Repairs = () => {
       setIsModalOpen(false);
       setEditingId(null);
       setFormData({ machine_id: '', part_id: '', vendor_id: '', quantity: 1, remarks: '', sent_date: new Date().toISOString().split('T')[0] });
+    }
+  });
+
+  const completeRepair = useMutation({
+    mutationFn: async (data: any) => {
+      const existing = repairs.find((r: any) => r.id === data.id);
+      const payload = {
+        machine_id: existing.machine_id,
+        part_id: existing.part_id,
+        vendor_id: existing.vendor_id,
+        quantity: existing.quantity,
+        sent_date: existing.sent_date.split('T')[0],
+        remarks: existing.remarks,
+        status: 'Closed',
+        cost: data.cost,
+        invoice_number: data.invoice_number,
+        completion_date: data.completion_date
+      };
+      const res = await apiClient.put(`/repairs/${data.id}`, payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['repairs'] });
+      setIsCompletionModalOpen(false);
     }
   });
 
@@ -198,6 +224,16 @@ const Repairs = () => {
                     </select>
                     <button onClick={() => handleEdit(r)} className="text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors">
                       <Edit2 size={16} />
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setCompletionData({ id: r.id, cost: r.cost || '', invoice_number: r.invoice_number || '', completion_date: r.completion_date ? r.completion_date.split('T')[0] : new Date().toISOString().split('T')[0] });
+                        setIsCompletionModalOpen(true);
+                      }}
+                      className="text-green-500/70 hover:text-green-600 hover:bg-green-50 p-2 rounded-full transition-colors"
+                      title="Mark Completed"
+                    >
+                      <CheckCircle size={16} />
                     </button>
                     {user?.role === 'Admin' && (
                       <button 
@@ -328,6 +364,34 @@ const Repairs = () => {
                 </div>
               </div>
               <button type="submit" disabled={createVendor.isPending} className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium mt-2">Save Vendor</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isCompletionModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+          <div className="bg-background p-6 rounded-xl w-full max-w-sm shadow-lg border">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Complete Repair Request</h3>
+              <button onClick={() => setIsCompletionModalOpen(false)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+            </div>
+            <form onSubmit={e => { e.preventDefault(); completeRepair.mutate(completionData); }} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium mb-1">Cost</label>
+                <input required type="text" value={completionData.cost} onChange={e => setCompletionData({...completionData, cost: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. $150.00" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">Invoice Number</label>
+                <input required type="text" value={completionData.invoice_number} onChange={e => setCompletionData({...completionData, invoice_number: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" placeholder="e.g. INV-12345" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">Completion Date</label>
+                <input required type="date" value={completionData.completion_date} onChange={e => setCompletionData({...completionData, completion_date: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" />
+              </div>
+              <button type="submit" disabled={completeRepair.isPending} className="w-full bg-[#10b981] text-white py-2 rounded-md font-medium mt-2 hover:opacity-90">
+                {completeRepair.isPending ? 'Saving...' : 'Mark as Completed'}
+              </button>
             </form>
           </div>
         </div>

@@ -107,6 +107,9 @@ class RepairRequest(Base):
     expected_return_date = Column(Date, nullable=True)
     status = Column(String, default=RepairStatusEnum.SENT.value)
     remarks = Column(Text, nullable=True)
+    cost = Column(String, nullable=True)
+    invoice_number = Column(String, nullable=True)
+    completion_date = Column(Date, nullable=True)
 
     machine = relationship("Machine", back_populates="repair_requests")
     part = relationship("PartMaster")
