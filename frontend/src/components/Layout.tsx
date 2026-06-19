@@ -86,14 +86,14 @@ const Layout = () => {
         {/* Top Header */}
         <header className="p-4 px-4 md:p-6 md:px-10 flex justify-between items-center sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-border/50 rounded-2xl p-1.5 pr-5 shadow-sm">
-              <div className="bg-white rounded-xl shadow-md flex items-center justify-center h-16 w-32 p-2">
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-border/50 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 pr-3 sm:pr-5 shadow-sm">
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-md flex items-center justify-center h-12 w-20 sm:h-16 sm:w-32 p-1.5 sm:p-2">
                 <img src="/surbhi-logo.png" alt="Surbhi Textile" className="h-full w-full object-contain scale-110" />
               </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-black text-foreground leading-tight tracking-tight uppercase">
+              <div>
+                <h1 className="text-base sm:text-xl font-black text-foreground leading-tight tracking-tight uppercase">
                   Surbhi<br/>
-                  <span className="text-primary tracking-widest text-sm">Textile</span>
+                  <span className="text-primary tracking-widest text-[10px] sm:text-sm">Textile</span>
                 </h1>
               </div>
             </div>
