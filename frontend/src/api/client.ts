@@ -28,3 +28,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Automatically trigger backend migration to fix 500 errors
+apiClient.get('/api/migrate-repairs').catch(() => {});
