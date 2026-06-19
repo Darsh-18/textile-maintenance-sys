@@ -30,8 +30,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
-      <div className="bg-card p-8 rounded-lg shadow-lg w-full max-w-md border">
-        <h1 className="text-2xl font-bold mb-6 text-center">Textile Maintenance Sys</h1>
+      <div className="bg-card p-8 rounded-[2rem] shadow-2xl w-full max-w-md border border-border relative overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="flex flex-col items-center justify-center mb-8 relative z-10">
+          <div className="bg-white rounded-2xl shadow-md flex items-center justify-center h-20 w-40 p-3 mb-4">
+            <img src="/surbhi-logo.png" alt="Surbhi Textile" className="h-full w-full object-contain scale-110" />
+          </div>
+          <h1 className="text-2xl font-black text-center uppercase tracking-widest text-foreground">Surbhi <span className="text-primary">Textile</span></h1>
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-1">Maintenance System</p>
+        </div>
         {error && <div className="bg-destructive/10 text-destructive p-3 rounded mb-4 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

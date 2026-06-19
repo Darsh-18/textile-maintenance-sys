@@ -29,8 +29,8 @@ const Layout = () => {
       
       {/* Slim Sidebar (Desktop Only) */}
       <div className="hidden md:flex w-24 bg-card border-r border-border flex-col items-center py-8 z-20 shadow-2xl">
-        <div className="mb-10 w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)] p-1 overflow-hidden">
-          <img src="/surbhi-logo.png" alt="Surbhi Textile Logo" className="w-full h-full object-contain" />
+        <div className="mb-10 w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg p-2 overflow-hidden border border-border/50">
+          <img src="/surbhi-logo.png" alt="Surbhi Textile Logo" className="w-full h-full object-contain scale-110" />
         </div>
         
         <nav className="flex-1 flex flex-col space-y-6">
@@ -86,8 +86,16 @@ const Layout = () => {
         {/* Top Header */}
         <header className="p-4 px-4 md:p-6 md:px-10 flex justify-between items-center sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <div className="flex items-center space-x-4">
-            <div className="bg-white rounded-lg p-1.5 shadow-md flex items-center justify-center h-10 w-20">
-              <img src="/surbhi-logo.png" alt="Surbhi Textile" className="h-full w-full object-contain" />
+            <div className="flex items-center space-x-3 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-border/50 rounded-2xl p-1.5 pr-5 shadow-sm">
+              <div className="bg-white rounded-xl shadow-md flex items-center justify-center h-16 w-32 p-2">
+                <img src="/surbhi-logo.png" alt="Surbhi Textile" className="h-full w-full object-contain scale-110" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-xl font-black text-foreground leading-tight tracking-tight uppercase">
+                  Surbhi<br/>
+                  <span className="text-primary tracking-widest text-sm">Textile</span>
+                </h1>
+              </div>
             </div>
             <h2 className="text-2xl font-black uppercase tracking-widest text-muted-foreground hidden sm:block border-l border-border pl-4">
               {location.pathname === '/' ? 'DASHBOARD' : location.pathname.split('/')[1].toUpperCase()}
