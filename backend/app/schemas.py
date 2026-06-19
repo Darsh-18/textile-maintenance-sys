@@ -104,9 +104,9 @@ class MaintenanceSessionResponse(BaseModel):
 
 class RepairRequestBase(BaseModel):
     machine_id: int
-    part_id: int
-    vendor_id: int
-    quantity: int = 1
+    part_id: Optional[int] = None
+    vendor_id: Optional[int] = None
+    quantity: Optional[int] = 1
     sent_date: date
     expected_return_date: Optional[date] = None
     status: str = "Sent for Repair"
@@ -118,8 +118,8 @@ class RepairRequestCreate(RepairRequestBase):
 class RepairRequestResponse(RepairRequestBase):
     id: int
     machine: MachineResponse
-    part: PartResponse
-    vendor: VendorResponse
+    part: Optional[PartResponse] = None
+    vendor: Optional[VendorResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
 class DowntimeRecordBase(BaseModel):
