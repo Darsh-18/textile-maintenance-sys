@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
 import { format } from 'date-fns';
-import { X, Edit2, Trash2, CheckCircle } from 'lucide-react';
+import { X, Edit2, Trash2, CheckCircle, Download } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Repairs = () => {
@@ -161,22 +161,77 @@ const Repairs = () => {
     setIsModalOpen(true);
   };
 
+  const exportCSV = () => {
+    if (!repairs || repairs.length === 0) return;
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Header Row
+    if (user?.role === 'Admin') {
+      csvContent += "ID,Machine Number,Machine Name,Machine Type,Error Description,Part Name,Part Number,Vendor Name,Sent Date,Status,Cost,Invoice Number,Completion Date\n";
+    } else {
+      csvContent += "ID,Machine Number,Machine Name,Machine Type,Error Description,Part Name,Part Number,Vendor Name,Sent Date,Status\n";
+    }
+    
+    // Data Rows
+    repairs.forEach((r: any) => {
+      const id = r.id || "";
+      const machineNo = (r.machine?.machine_number || "").replace(/"/g, '""');
+      const machineName = (r.machine?.name || "").replace(/"/g, '""');
+      const machineType = (r.machine?.type || "").replace(/"/g, '""');
+      const remarks = (r.remarks || "").replace(/"/g, '""');
+      const partName = (r.part?.part_name || "").replace(/"/g, '""');
+      const partNo = (r.part?.part_number || "").replace(/"/g, '""');
+      const vendorName = (r.vendor?.vendor_name || "").replace(/"/g, '""');
+      const sentDate = r.sent_date ? format(new Date(r.sent_date), 'yyyy-MM-dd') : "";
+      const status = r.status || "";
+      
+      let row = `"${id}","${machineNo}","${machineName}","${machineType}","${remarks}","${partName}","${partNo}","${vendorName}","${sentDate}","${status}"`;
+      
+      if (user?.role === 'Admin') {
+        const cost = (r.cost || "").replace(/"/g, '""');
+        const invoice = (r.invoice_number || "").replace(/"/g, '""');
+        const compDate = r.completion_date ? format(new Date(r.completion_date), 'yyyy-MM-dd') : "";
+        row += `,"${cost}","${invoice}","${compDate}"`;
+      }
+      
+      csvContent += row + "\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Repairs_Export_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="space-y-6 relative">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Repair Requests</h2>
-        <button 
-          onClick={() => {
-            setEditingId(null);
-            setFormData({ machine_id: '', part_id: '', vendor_id: '', quantity: 1, remarks: '', sent_date: new Date().toISOString().split('T')[0] });
-            setIsModalOpen(true);
-          }}
-          className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:opacity-90"
-        >
-          + New Repair
-        </button>
+        <div className="flex items-center space-x-3">
+          <button 
+            onClick={exportCSV}
+            className="flex items-center space-x-2 bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary px-4 py-2 rounded-full font-bold transition-colors text-sm uppercase tracking-widest shadow-sm border border-border hover:border-primary/20"
+          >
+            <Download size={16} />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+          <button 
+            onClick={() => {
+              setEditingId(null);
+              setFormData({ machine_id: '', part_id: '', vendor_id: '', quantity: 1, remarks: '', sent_date: new Date().toISOString().split('T')[0] });
+              setIsModalOpen(true);
+            }}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all text-sm uppercase tracking-widest"
+          >
+            + New Repair
+          </button>
+        </div>
       </div>
 
       <div className="bg-card rounded-[2rem] overflow-x-auto shadow-xl">
