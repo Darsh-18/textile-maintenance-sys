@@ -189,14 +189,16 @@ const Repairs = () => {
               <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Part</th>
               <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Vendor</th>
               <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Sent Date</th>
-              <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Completion Info</th>
+              {user?.role === 'Admin' && (
+                <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Completion Info</th>
+              )}
               <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Status</th>
               <th className="p-6 font-bold text-muted-foreground uppercase tracking-widest text-xs">Actions</th>
             </tr>
           </thead>
           <tbody>
             {repairs?.length === 0 && (
-              <tr><td colSpan={8} className="p-8 text-center text-muted-foreground font-bold uppercase tracking-widest">No repairs found.</td></tr>
+              <tr><td colSpan={user?.role === 'Admin' ? 8 : 7} className="p-8 text-center text-muted-foreground font-bold uppercase tracking-widest">No repairs found.</td></tr>
             )}
             {repairs?.map((r: any) => (
               <tr key={r.id} className="border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors group">
@@ -206,17 +208,19 @@ const Repairs = () => {
                 <td className="p-6 font-bold text-muted-foreground group-hover:text-foreground transition-colors">{r.part?.part_name || '-'}</td>
                 <td className="p-6 font-bold text-muted-foreground group-hover:text-foreground transition-colors">{r.vendor?.vendor_name || '-'}</td>
                 <td className="p-6 font-bold text-muted-foreground">{format(new Date(r.sent_date), 'MMM d, yyyy')}</td>
-                <td className="p-6">
-                  {r.status === 'Closed' || r.cost ? (
-                    <div className="flex flex-col space-y-0.5 text-[11px] uppercase tracking-wide">
-                      <span className="font-bold text-foreground">Cost: {r.cost || '-'}</span>
-                      <span className="text-muted-foreground">Inv: {r.invoice_number || '-'}</span>
-                      <span className="text-muted-foreground">Done: {r.completion_date ? format(new Date(r.completion_date), 'MMM d') : '-'}</span>
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground/40 italic text-xs font-medium">Pending</span>
-                  )}
-                </td>
+                {user?.role === 'Admin' && (
+                  <td className="p-6">
+                    {r.status === 'Closed' || r.cost ? (
+                      <div className="flex flex-col space-y-0.5 text-[11px] uppercase tracking-wide">
+                        <span className="font-bold text-foreground">Cost: {r.cost || '-'}</span>
+                        <span className="text-muted-foreground">Inv: {r.invoice_number || '-'}</span>
+                        <span className="text-muted-foreground">Done: {r.completion_date ? format(new Date(r.completion_date), 'MMM d') : '-'}</span>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground/40 italic text-xs font-medium">Pending</span>
+                    )}
+                  </td>
+                )}
                 <td className="p-6">
                   <span className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-black shadow-sm ${
                     r.status === 'Closed' ? 'bg-primary/20 text-primary' : 'bg-secondary/20 text-secondary'
@@ -237,16 +241,18 @@ const Repairs = () => {
                     <button onClick={() => handleEdit(r)} className="text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors">
                       <Edit2 size={16} />
                     </button>
-                    <button 
-                      onClick={() => {
-                        setCompletionData({ id: r.id, cost: r.cost || '', invoice_number: r.invoice_number || '', completion_date: r.completion_date ? r.completion_date.split('T')[0] : new Date().toISOString().split('T')[0] });
-                        setIsCompletionModalOpen(true);
-                      }}
-                      className="text-green-500/70 hover:text-green-600 hover:bg-green-50 p-2 rounded-full transition-colors"
-                      title="Mark Completed"
-                    >
-                      <CheckCircle size={16} />
-                    </button>
+                    {user?.role === 'Admin' && (
+                      <button 
+                        onClick={() => {
+                          setCompletionData({ id: r.id, cost: r.cost || '', invoice_number: r.invoice_number || '', completion_date: r.completion_date ? r.completion_date.split('T')[0] : new Date().toISOString().split('T')[0] });
+                          setIsCompletionModalOpen(true);
+                        }}
+                        className="text-green-500/70 hover:text-green-600 hover:bg-green-50 p-2 rounded-full transition-colors"
+                        title="Mark Completed"
+                      >
+                        <CheckCircle size={16} />
+                      </button>
+                    )}
                     {user?.role === 'Admin' && (
                       <button 
                         onClick={() => handleDelete(r.id)} 
