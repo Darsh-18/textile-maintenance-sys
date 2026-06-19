@@ -12,6 +12,7 @@ import Reports from './pages/Reports';
 import Repairs from './pages/Repairs';
 import MasterData from './pages/MasterData';
 import MachineHistory from './pages/MachineHistory';
+import ServiceHistory from './pages/ServiceHistory';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,8 @@ const App = () => {
               <Route path="machines" element={<Machines />} />
               <Route path="machines/:id" element={<MachineHistory />} />
               <Route path="repairs" element={<Repairs />} />
+              <Route path="master-data" element={<MasterData />} />
+              <Route path="services/:id" element={<ServiceHistory />} />
             </Route>
           </Routes>
         </BrowserRouter>

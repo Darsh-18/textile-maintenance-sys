@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
+import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 
 const MasterData = () => {
@@ -84,6 +85,9 @@ const MasterData = () => {
                   <td className="p-4 font-medium">{s.service_name}</td>
                   <td className="p-4">{s.interval_days}</td>
                   <td className="p-4">{s.is_active ? 'Active' : 'Inactive'}</td>
+                  <td className="p-4 text-right">
+                    <Link to={`/services/${s.id}`} className="text-primary hover:underline text-xs font-bold uppercase">View History</Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
