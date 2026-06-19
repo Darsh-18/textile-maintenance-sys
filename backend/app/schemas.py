@@ -110,7 +110,6 @@ class RepairRequestBase(BaseModel):
     sent_date: date
     expected_return_date: Optional[date] = None
     status: str = "Sent for Repair"
-    error_description: Optional[str] = None
     remarks: Optional[str] = None
     cost: Optional[str] = None
     invoice_number: Optional[str] = None
