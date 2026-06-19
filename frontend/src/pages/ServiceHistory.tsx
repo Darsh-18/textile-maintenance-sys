@@ -63,7 +63,6 @@ const ServiceHistory = () => {
         <div>
           <h2 className="text-2xl font-bold">{service?.service_name}</h2>
           <p className="text-muted-foreground mt-1">{service?.description || 'No description'}</p>
-          <p className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">Interval: {service?.interval_days} Days</p>
         </div>
         {history && history.length > 0 && (
           <button 

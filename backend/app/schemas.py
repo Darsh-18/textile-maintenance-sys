@@ -94,6 +94,7 @@ class MaintenanceItemResponse(BaseModel):
 class MaintenanceSessionResponse(BaseModel):
     id: int
     machine_id: int
+    machine: MachineResponse
     worker: UserResponse
     date: datetime
     remarks: Optional[str] = None

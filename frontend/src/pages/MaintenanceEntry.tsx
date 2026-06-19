@@ -196,10 +196,6 @@ const MaintenanceEntry = () => {
                 <label className="block text-xs font-medium mb-1">Description</label>
                 <input type="text" value={serviceData.description} onChange={e => setServiceData({...serviceData, description: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" />
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">Interval (Days)</label>
-                <input required type="number" min="1" value={serviceData.interval_days} onChange={e => setServiceData({...serviceData, interval_days: parseInt(e.target.value)})} className="w-full p-2 border rounded focus:ring-1 focus:ring-primary outline-none" />
-              </div>
               <button type="submit" disabled={createService.isPending} className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium mt-2">Save Service</button>
             </form>
           </div>
