@@ -40,19 +40,28 @@ app.include_router(services.router)
 from sqlalchemy import text
 from .database import engine
 
+def apply_migrations():
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN cost VARCHAR;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN invoice_number VARCHAR;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN completion_date DATE;"))
+    except: pass
+
+# Run migrations automatically on startup
+apply_migrations()
+
 @app.get("/api/migrate-repairs")
 def migrate_repairs():
-    with engine.begin() as conn:
-        try:
-            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN cost VARCHAR;"))
-        except: pass
-        try:
-            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN invoice_number VARCHAR;"))
-        except: pass
-        try:
-            conn.execute(text("ALTER TABLE repair_requests ADD COLUMN completion_date DATE;"))
-        except: pass
+    apply_migrations()
     return {"message": "Migration complete"}
+
 app.include_router(parts.router)
 app.include_router(vendors.router)
 app.include_router(maintenance.router)
