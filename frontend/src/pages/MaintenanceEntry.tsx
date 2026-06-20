@@ -75,8 +75,14 @@ const MaintenanceEntry = () => {
       (s.description && s.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
+    // Compute all unique categories dynamically
+    const allCategories = Array.from(new Set([
+      ...CATEGORIES,
+      ...services.map((s: any) => s.category || "General")
+    ]));
+
     const grouped: Record<string, any[]> = {};
-    CATEGORIES.forEach(cat => grouped[cat] = []);
+    allCategories.forEach(cat => grouped[cat] = []);
     
     filtered.forEach((s: any) => {
       const cat = s.category || "General";
@@ -84,7 +90,7 @@ const MaintenanceEntry = () => {
       grouped[cat].push(s);
     });
 
-    return grouped;
+    return { grouped, allCategories };
   }, [services, searchQuery]);
 
   return (
@@ -136,8 +142,8 @@ const MaintenanceEntry = () => {
             </div>
 
             <div className="space-y-4">
-              {CATEGORIES.map(category => {
-                const categoryServices = groupedFilteredServices[category] || [];
+              {groupedFilteredServices.allCategories?.map((category: string) => {
+                const categoryServices = groupedFilteredServices.grouped[category] || [];
                 if (categoryServices.length === 0) return null;
 
                 return (
@@ -186,7 +192,7 @@ const MaintenanceEntry = () => {
                   </div>
                 );
               })}
-              {Object.values(groupedFilteredServices).every(arr => arr.length === 0) && (
+              {Object.values(groupedFilteredServices.grouped).every((arr: any) => arr.length === 0) && (
                 <div className="text-center py-10 text-muted-foreground">
                   No services found matching your search.
                 </div>

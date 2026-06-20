@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
-import { X, Edit2, Check, Ban } from 'lucide-react';
+import { X, Edit2, Check, Ban, Trash2 } from 'lucide-react';
 
 const CATEGORIES = [
   "Lubrication",
@@ -53,9 +53,11 @@ const MasterData = () => {
   });
 
   const openModal = (item?: any) => {
+    setIsCustomCategory(false);
     if (item) {
       setEditingId(item.id);
       setFormData(item);
+      // Check if item.category is in the predefined list, if not it's custom but we can just use the select
     } else {
       setEditingId(null);
       if (activeTab === 'services') {
@@ -71,6 +73,22 @@ const MasterData = () => {
     e.preventDefault();
     saveItem.mutate({ endpoint: `/${activeTab}/`, data: formData, id: editingId || undefined });
   };
+
+  const deleteItem = useMutation({
+    mutationFn: async ({ endpoint, id }: { endpoint: string, id: number }) => {
+      return (await apiClient.delete(`${endpoint}${id}`)).data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [activeTab] });
+    }
+  });
+
+  const dynamicCategories = Array.from(new Set([
+    ...CATEGORIES,
+    ...(services || []).map((s: any) => s.category || 'General')
+  ]));
+  
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
 
   return (
     <div className="space-y-6 relative">
@@ -123,10 +141,20 @@ const MasterData = () => {
                     <button onClick={() => openModal(s)} className="p-1.5 bg-secondary text-secondary-foreground rounded hover:opacity-80 transition-opacity" title="Edit"><Edit2 size={14}/></button>
                     <button 
                       onClick={() => toggleStatus.mutate({ endpoint: '/services/', id: s.id, data: {...s, is_active: !s.is_active} })}
-                      className={`p-1.5 text-white rounded hover:opacity-80 transition-opacity ${s.is_active ? 'bg-red-500' : 'bg-green-500'}`}
+                      className={`p-1.5 text-white rounded hover:opacity-80 transition-opacity ${s.is_active ? 'bg-yellow-500' : 'bg-green-500'}`}
                       title={s.is_active ? 'Deactivate' : 'Activate'}
                     >
                       {s.is_active ? <Ban size={14}/> : <Check size={14}/>}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if(window.confirm(`Are you sure you want to delete ${s.service_name}?`)) {
+                          deleteItem.mutate({ endpoint: '/services/', id: s.id });
+                        }
+                      }}
+                      className="p-1.5 bg-red-500 text-white rounded hover:opacity-80 transition-opacity" title="Delete"
+                    >
+                      <Trash2 size={14}/>
                     </button>
                   </td>
                 </tr>
@@ -161,10 +189,20 @@ const MasterData = () => {
                     <button onClick={() => openModal(p)} className="p-1.5 bg-secondary text-secondary-foreground rounded hover:opacity-80 transition-opacity" title="Edit"><Edit2 size={14}/></button>
                     <button 
                       onClick={() => toggleStatus.mutate({ endpoint: '/parts/', id: p.id, data: {...p, is_active: !p.is_active} })}
-                      className={`p-1.5 text-white rounded hover:opacity-80 transition-opacity ${p.is_active ? 'bg-red-500' : 'bg-green-500'}`}
+                      className={`p-1.5 text-white rounded hover:opacity-80 transition-opacity ${p.is_active ? 'bg-yellow-500' : 'bg-green-500'}`}
                       title={p.is_active ? 'Deactivate' : 'Activate'}
                     >
                       {p.is_active ? <Ban size={14}/> : <Check size={14}/>}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if(window.confirm(`Are you sure you want to delete ${p.part_name}?`)) {
+                          deleteItem.mutate({ endpoint: '/parts/', id: p.id });
+                        }
+                      }}
+                      className="p-1.5 bg-red-500 text-white rounded hover:opacity-80 transition-opacity" title="Delete"
+                    >
+                      <Trash2 size={14}/>
                     </button>
                   </td>
                 </tr>
@@ -198,9 +236,45 @@ const MasterData = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-muted-foreground">Category</label>
-                    <select required value={formData.category || CATEGORIES[0]} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-2 border border-border rounded focus:ring-2 focus:ring-primary outline-none">
-                      {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
+                    {isCustomCategory ? (
+                      <div className="flex space-x-2">
+                        <input 
+                          type="text" 
+                          required 
+                          value={formData.category || ''} 
+                          onChange={e => setFormData({...formData, category: e.target.value})} 
+                          className="w-full p-2 border border-border rounded focus:ring-2 focus:ring-primary outline-none" 
+                          placeholder="Enter new category name..." 
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setIsCustomCategory(false);
+                            setFormData({...formData, category: CATEGORIES[0]});
+                          }}
+                          className="px-3 bg-muted text-muted-foreground rounded hover:bg-border transition-colors font-bold text-xs uppercase"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <select 
+                        required 
+                        value={dynamicCategories.includes(formData.category) ? formData.category : (formData.category ? 'add_new' : CATEGORIES[0])} 
+                        onChange={e => {
+                          if (e.target.value === 'add_new') {
+                            setIsCustomCategory(true);
+                            setFormData({...formData, category: ''});
+                          } else {
+                            setFormData({...formData, category: e.target.value});
+                          }
+                        }} 
+                        className="w-full p-2 border border-border rounded focus:ring-2 focus:ring-primary outline-none"
+                      >
+                        {dynamicCategories.map((cat: string) => <option key={cat} value={cat}>{cat}</option>)}
+                        <option value="add_new" className="font-bold text-primary">+ Add New Category...</option>
+                      </select>
+                    )}
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-muted-foreground">Description</label>
