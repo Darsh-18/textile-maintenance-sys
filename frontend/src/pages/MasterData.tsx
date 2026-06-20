@@ -59,7 +59,7 @@ const MasterData = () => {
     } else {
       setEditingId(null);
       if (activeTab === 'services') {
-        setFormData({ service_name: '', service_code: '', category: CATEGORIES[0], description: '', estimated_duration: 15, is_active: true });
+        setFormData({ service_name: '', service_code: '', category: CATEGORIES[0], description: '', is_active: true });
       } else {
         setFormData({ part_name: '', part_number: '', description: '', is_active: true });
       }
@@ -104,7 +104,6 @@ const MasterData = () => {
                 <th className="p-4 font-semibold">Code</th>
                 <th className="p-4 font-semibold">Service Name</th>
                 <th className="p-4 font-semibold">Category</th>
-                <th className="p-4 font-semibold">Duration</th>
                 <th className="p-4 font-semibold">Status</th>
                 <th className="p-4 text-right font-semibold">Actions</th>
               </tr>
@@ -115,7 +114,6 @@ const MasterData = () => {
                   <td className="p-4 font-bold text-muted-foreground">{s.service_code || '-'}</td>
                   <td className="p-4 font-medium">{s.service_name}</td>
                   <td className="p-4 text-xs font-bold uppercase tracking-wider">{s.category}</td>
-                  <td className="p-4">{s.estimated_duration} mins</td>
                   <td className="p-4">
                     <span className={`px-2 py-1 rounded text-xs font-bold ${s.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {s.is_active ? 'ACTIVE' : 'INACTIVE'}
@@ -188,14 +186,10 @@ const MasterData = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {activeTab === 'services' && (
                 <>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-muted-foreground">Service Code</label>
                       <input type="text" value={formData.service_code || ''} onChange={e => setFormData({...formData, service_code: e.target.value})} className="w-full p-2 border border-border rounded focus:ring-2 focus:ring-primary outline-none" placeholder="e.g. LUB-001" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-muted-foreground">Duration (Mins)</label>
-                      <input type="number" required value={formData.estimated_duration || 15} onChange={e => setFormData({...formData, estimated_duration: parseInt(e.target.value)})} className="w-full p-2 border border-border rounded focus:ring-2 focus:ring-primary outline-none" />
                     </div>
                   </div>
                   <div>

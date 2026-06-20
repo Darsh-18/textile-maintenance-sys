@@ -58,12 +58,6 @@ const Services = () => {
               <p className="text-sm text-muted-foreground line-clamp-3">
                 {s.description || 'No description available for this service.'}
               </p>
-              
-              <div className="flex items-center text-sm">
-                <div className="w-2 h-2 rounded-full bg-secondary mr-3"></div>
-                <span className="font-bold text-muted-foreground uppercase tracking-widest text-xs w-24">Duration</span> 
-                <span className="font-bold text-foreground">{s.estimated_duration ? `${s.estimated_duration} mins` : '-'}</span>
-              </div>
             </div>
             
             <Link to={`/services/${s.id}`} className="mt-auto block w-full text-center bg-muted/30 hover:bg-primary text-foreground hover:text-background py-3 rounded-full text-sm font-black uppercase tracking-widest transition-all duration-300">

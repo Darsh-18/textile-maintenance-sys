@@ -169,14 +169,15 @@ const MaintenanceEntry = () => {
                               readOnly
                             />
                             <div className="ml-4 flex-1">
-                              <p className="font-bold text-foreground">{s.service_name}</p>
-                              {s.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>}
-                              {(s.estimated_duration || s.service_code) && (
-                                <div className="flex items-center space-x-3 mt-2">
-                                  {s.service_code && <span className="text-[10px] font-black uppercase tracking-widest bg-muted px-2 py-0.5 rounded text-muted-foreground">{s.service_code}</span>}
-                                  {s.estimated_duration && <span className="text-[10px] font-bold text-muted-foreground">{s.estimated_duration} MINS</span>}
-                                </div>
-                              )}
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-bold block truncate">{s.service_name}</span>
+                                {s.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>}
+                                {s.service_code && (
+                                  <div className="flex items-center space-x-2 mt-1">
+                                    <span className="text-[10px] font-black text-primary/60 bg-primary/5 px-1.5 py-0.5 rounded uppercase tracking-widest">{s.service_code}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
