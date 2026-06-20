@@ -80,3 +80,22 @@ def delete_maintenance_session(
     db.delete(db_session)
     db.commit()
     return {"message": "Session deleted successfully"}
+
+@router.delete("/machine/{machine_id}")
+def clear_machine_history(
+    machine_id: int,
+    db: Session = Depends(database.get_db),
+    user: models.User = Depends(auth.require_role(["Admin"]))
+):
+    sessions = db.query(models.MaintenanceSession).filter(models.MaintenanceSession.machine_id == machine_id).all()
+    if not sessions:
+        return {"message": "No history found for this machine"}
+    
+    session_ids = [s.id for s in sessions]
+    # Delete all items belonging to these sessions
+    db.query(models.MaintenanceItem).filter(models.MaintenanceItem.session_id.in_(session_ids)).delete(synchronize_session=False)
+    # Delete all sessions
+    db.query(models.MaintenanceSession).filter(models.MaintenanceSession.id.in_(session_ids)).delete(synchronize_session=False)
+    
+    db.commit()
+    return {"message": f"Successfully cleared timeline for machine"}

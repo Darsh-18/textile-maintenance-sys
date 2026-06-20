@@ -61,6 +61,16 @@ const MachineHistory = () => {
     }
   });
 
+  const clearTimeline = useMutation({
+    mutationFn: async () => {
+      const res = await apiClient.delete(`/maintenance/machine/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['machineHistory', id] });
+    }
+  });
+
   const handleEdit = (session: any) => {
     setEditingId(session.id);
     setFormData({
@@ -118,15 +128,31 @@ const MachineHistory = () => {
           <h2 className="text-2xl font-bold">{machine?.machine_number} - {machine?.name}</h2>
           <p className="text-muted-foreground mt-1">Department: {machine?.department} | Type: {machine?.type}</p>
         </div>
-        {history && history.length > 0 && (
-          <button 
-            onClick={exportCSV}
-            className="flex items-center space-x-2 bg-primary/10 text-primary hover:bg-primary hover:text-background px-4 py-2 rounded-full font-bold transition-colors text-xs uppercase tracking-widest"
-          >
-            <Download size={16} />
-            <span>Export CSV</span>
-          </button>
-        )}
+        <div className="flex items-center space-x-2">
+          {history && history.length > 0 && user?.role === 'Admin' && (
+            <button 
+              onClick={() => {
+                if (window.confirm(`Are you sure you want to PERMANENTLY DELETE the entire maintenance timeline for ${machine?.machine_number}? This cannot be undone.`)) {
+                  clearTimeline.mutate();
+                }
+              }}
+              disabled={clearTimeline.isPending}
+              className="flex items-center space-x-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white px-4 py-2 rounded-full font-bold transition-colors text-xs uppercase tracking-widest disabled:opacity-50"
+            >
+              <Trash2 size={16} />
+              <span>Clear Timeline</span>
+            </button>
+          )}
+          {history && history.length > 0 && (
+            <button 
+              onClick={exportCSV}
+              className="flex items-center space-x-2 bg-primary/10 text-primary hover:bg-primary hover:text-background px-4 py-2 rounded-full font-bold transition-colors text-xs uppercase tracking-widest"
+            >
+              <Download size={16} />
+              <span>Export CSV</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <h3 className="text-xl font-semibold mt-8 mb-4">Maintenance Timeline</h3>
