@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LayoutDashboard, PenTool, Wrench, Package, Users, Settings, LogOut, FileText, Database } from 'lucide-react';
+import { LayoutDashboard, PenTool, Wrench, Package, Users, Settings, LogOut, FileText, Database, ListChecks } from 'lucide-react';
 
 const Layout = () => {
   const { user, logout } = useAuth();
@@ -18,6 +18,7 @@ const Layout = () => {
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Maintenance Entry', path: '/maintenance', icon: <PenTool size={20} /> },
     { name: 'Machines', path: '/machines', icon: <Settings size={20} /> },
+    { name: 'Services', path: '/services', icon: <ListChecks size={20} /> },
     { name: 'Repairs', path: '/repairs', icon: <Wrench size={20} /> },
     ...(user?.role === 'Admin' ? [{ name: 'Master Data', path: '/master-data', icon: <Database size={20} /> }] : []),
   ];

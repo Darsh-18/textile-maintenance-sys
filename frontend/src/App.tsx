@@ -14,6 +14,8 @@ import MasterData from './pages/MasterData';
 import MachineHistory from './pages/MachineHistory';
 import ServiceHistory from './pages/ServiceHistory';
 
+import Services from './pages/Services';
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -35,9 +37,10 @@ const App = () => {
               <Route path="maintenance" element={<MaintenanceEntry />} />
               <Route path="machines" element={<Machines />} />
               <Route path="machines/:id" element={<MachineHistory />} />
+              <Route path="services" element={<Services />} />
+              <Route path="services/:id" element={<ServiceHistory />} />
               <Route path="repairs" element={<Repairs />} />
               <Route path="master-data" element={<MasterData />} />
-              <Route path="services/:id" element={<ServiceHistory />} />
             </Route>
           </Routes>
         </BrowserRouter>
