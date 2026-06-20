@@ -31,3 +31,6 @@ apiClient.interceptors.response.use(
 
 // Automatically trigger backend migration to fix 500 errors
 apiClient.get('/api/migrate-repairs').catch(() => {});
+
+// Automatically trigger machine seeding based on the excel sheet
+apiClient.get('/api/seed-machines').catch(() => {});
