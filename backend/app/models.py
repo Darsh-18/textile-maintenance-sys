@@ -30,7 +30,7 @@ class Machine(Base):
     __tablename__ = "machines"
 
     id = Column(Integer, primary_key=True, index=True)
-    machine_number = Column(String, unique=True, index=True)
+    machine_number = Column(String, index=True)
     name = Column(String)
     type = Column(String)
     department = Column(String)

@@ -53,6 +53,15 @@ def apply_migrations():
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE repair_requests ADD COLUMN completion_date DATE;"))
     except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE machines DROP CONSTRAINT IF EXISTS machines_machine_number_key;"))
+    except: pass
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("DROP INDEX IF EXISTS ix_machines_machine_number;"))
+            conn.execute(text("CREATE INDEX ix_machines_machine_number ON machines (machine_number);"))
+    except: pass
 
 # Run migrations automatically on startup
 apply_migrations()
