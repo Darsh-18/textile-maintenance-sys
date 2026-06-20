@@ -46,9 +46,12 @@ class ServiceMaster(Base):
     __tablename__ = "services"
 
     id = Column(Integer, primary_key=True, index=True)
+    service_code = Column(String, unique=True, index=True, nullable=True)
     service_name = Column(String, unique=True, index=True)
+    category = Column(String, default="General")
     description = Column(Text, nullable=True)
-    interval_days = Column(Integer)
+    interval_days = Column(Integer, default=30)
+    estimated_duration = Column(Integer, default=15) # in minutes
     is_active = Column(Boolean, default=True)
 
 class PartMaster(Base):

@@ -38,9 +38,12 @@ class MachineResponse(MachineBase):
     model_config = ConfigDict(from_attributes=True)
 
 class ServiceBase(BaseModel):
+    service_code: Optional[str] = None
     service_name: str
+    category: str = "General"
     description: Optional[str] = None
-    interval_days: int
+    interval_days: int = 30
+    estimated_duration: int = 15
     is_active: bool = True
 
 class ServiceCreate(ServiceBase):
