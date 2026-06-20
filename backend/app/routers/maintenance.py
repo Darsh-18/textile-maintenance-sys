@@ -65,3 +65,18 @@ def update_maintenance_session(
     db.commit()
     db.refresh(db_session)
     return db_session
+
+@router.delete("/{session_id}")
+def delete_maintenance_session(
+    session_id: int,
+    db: Session = Depends(database.get_db),
+    user: models.User = Depends(auth.require_role(["Admin"]))
+):
+    db_session = db.query(models.MaintenanceSession).filter(models.MaintenanceSession.id == session_id).first()
+    if not db_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    db.query(models.MaintenanceItem).filter(models.MaintenanceItem.session_id == session_id).delete()
+    db.delete(db_session)
+    db.commit()
+    return {"message": "Session deleted successfully"}

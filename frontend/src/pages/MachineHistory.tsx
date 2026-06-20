@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
 import { format } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit2, X, Download } from 'lucide-react';
+import { Edit2, X, Download, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const MachineHistory = () => {
@@ -48,6 +48,16 @@ const MachineHistory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['machineHistory', id] });
       setEditingId(null);
+    }
+  });
+
+  const deleteSession = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const res = await apiClient.delete(`/maintenance/${sessionId}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['machineHistory', id] });
     }
   });
 
@@ -128,12 +138,25 @@ const MachineHistory = () => {
               <span className="text-xs font-bold">{session.items.length}</span>
             </div>
             <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card border p-4 rounded shadow-sm relative group">
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleEdit(session)} className="text-muted-foreground hover:text-primary">
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                <button onClick={() => handleEdit(session)} className="text-muted-foreground hover:text-primary p-1 bg-background rounded-full border border-border">
                   <Edit2 size={16} />
                 </button>
+                {user?.role === 'Admin' && (
+                  <button 
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to delete this maintenance record?')) {
+                        deleteSession.mutate(session.id);
+                      }
+                    }} 
+                    className="text-muted-foreground hover:text-destructive p-1 bg-background rounded-full border border-border"
+                    disabled={deleteSession.isPending}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
-              <div className="flex justify-between mb-1 pr-6">
+              <div className="flex justify-between mb-1 pr-16">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-foreground">Services Performed</span>
                   {session.is_edited && (
